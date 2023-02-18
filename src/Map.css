@@ -4,9 +4,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-  }
-  
-  .sidebarStyle {
+}
+
+.sidebarStyle {
     display: inline-block;
     position: absolute;
     top: 0;
@@ -17,4 +17,8 @@
     z-index: 1 !important;
     padding: 6px;
     font-weight: bold;
-  }
+}
+
+.mapboxgl-marker {
+    z-index: 9999;
+}

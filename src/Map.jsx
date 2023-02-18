@@ -1,54 +1,64 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
-// import Geocoder from 'react-map-gl-geocoder'
-import './Map.css';
 
-mapboxgl.accessToken =
-  'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
-const Map = () => {
-  const mapContainerRef = useRef(null);
+const StanfordMap = () => {
+    const [map, setMap] = useState(null);
 
-  const [lng, setLng] = useState(5);
-  const [lat, setLat] = useState(34);
-  const [zoom, setZoom] = useState(1);
+    useEffect(() => {
+        const initializeMap = () => {
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-122.1708, 37.4241],
+                zoom: 13
+            });
 
-  // Initialize map when component mounts
-  useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [lng, lat],
-      zoom: zoom,
-      maxBounds: [
-        [-180, -85],
-        [180, 85]
-    ],
-    });
+            // Add markers for local businesses
+            const localBusinesses = [
+                {
+                    name: 'Stanford Coffee',
+                    location: [-122.1679, 37.4276],
+                    product: 'Latte',
+                    price: '$4.50',
+                    image: 'https://example.com/latte.jpg'
+                },
+                {
+                    name: 'Hobee\'s',
+                    location: [-122.1824, 37.4454],
+                    product: 'Pancakes',
+                    price: '$9.99',
+                    image: 'https://example.com/pancakes.jpg'
+                },
+                // Add more local businesses here
+            ];
 
-    // map.addControl(
-    //   new MapboxGeocoder({
-    //   accessToken: mapboxgl.accessToken,
-    //   mapboxgl: mapboxgl
-    //   })
-    //   );
+            localBusinesses.forEach((business) => {
+                const popupHtml = `
+          <div>
+            <h3>${business.name}</h3>
+            <img src="${business.image}" alt="${business.product}" style="width: 100%; max-width: 300px;">
+            <p><strong>Price:</strong> ${business.price}</p>
+            <button>Buy now</button>
+          </div>
+        `;
 
-    map.on('move', () => {
-      setLng(map.getCenter().lng.toFixed(4));
-      setLat(map.getCenter().lat.toFixed(4));
-      setZoom(map.getZoom().toFixed(2));
-    });
+                new mapboxgl.Marker()
+                    .setLngLat(business.location)
+                    .setPopup(new mapboxgl.Popup().setHTML(popupHtml))
+                    .addTo(map);
+            });
 
-    // Clean up on unmount
-    return () => map.remove();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+            setMap(map);
+        };
 
-  return (
-    <div>
-      <div className='map-container' ref={mapContainerRef} />
-    </div>
-  );
+        if (!map) {
+            initializeMap();
+        }
+    }, [map]);
+
+    return <div id="map" style={{ height: '500px' }} />;
 };
 
-export default Map;
+export default StanfordMap;
