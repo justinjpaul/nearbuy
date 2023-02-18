@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+// import Geocoder from 'react-map-gl-geocoder'
 import './Map.css';
 
 mapboxgl.accessToken =
@@ -10,7 +12,7 @@ const Map = () => {
 
   const [lng, setLng] = useState(5);
   const [lat, setLat] = useState(34);
-  const [zoom, setZoom] = useState(1.5);
+  const [zoom, setZoom] = useState(1);
 
   // Initialize map when component mounts
   useEffect(() => {
@@ -18,11 +20,19 @@ const Map = () => {
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [lng, lat],
-      zoom: zoom
+      zoom: zoom,
+      maxBounds: [
+        [-180, -85],
+        [180, 85]
+    ],
     });
 
-    // Add navigation control (the +/- zoom buttons)
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // map.addControl(
+    //   new MapboxGeocoder({
+    //   accessToken: mapboxgl.accessToken,
+    //   mapboxgl: mapboxgl
+    //   })
+    //   );
 
     map.on('move', () => {
       setLng(map.getCenter().lng.toFixed(4));
@@ -36,11 +46,6 @@ const Map = () => {
 
   return (
     <div>
-      <div className='sidebarStyle'>
-        <div>
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-      </div>
       <div className='map-container' ref={mapContainerRef} />
     </div>
   );
