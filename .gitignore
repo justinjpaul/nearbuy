@@ -132,4 +132,4 @@ dmypy.json
 
 
 convex.json
-node_module/
+node_modules/
